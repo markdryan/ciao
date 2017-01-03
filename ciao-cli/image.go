@@ -24,10 +24,11 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/rackspace/gophercloud"
-	"github.com/rackspace/gophercloud/openstack"
-	"github.com/rackspace/gophercloud/openstack/imageservice/v2/images"
-	"github.com/rackspace/gophercloud/pagination"
+	"github.com/gophercloud/gophercloud"
+	"github.com/gophercloud/gophercloud/openstack"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/imagedata"
+	"github.com/gophercloud/gophercloud/openstack/imageservice/v2/images"
+	"github.com/gophercloud/gophercloud/pagination"
 )
 
 var imageCommand = &command{
@@ -261,7 +262,7 @@ func (cmd *imageDownloadCommand) run(args []string) (err error) {
 		fatalf("Could not get Image service client [%s]\n", err)
 	}
 
-	r, err := images.Download(client, cmd.image).Extract()
+	r, err := imagedata.Download(client, cmd.image).Extract()
 	if err != nil {
 		fatalf("Could not download image [%s]\n", err)
 	}
@@ -338,7 +339,7 @@ func uploadTenantImage(username, password, tenant, image, filename string) error
 	}
 	defer file.Close()
 
-	res := images.Upload(client, image, file)
+	res := imagedata.Upload(client, image, file)
 	if res.Err != nil {
 		fatalf("Could not upload %s [%s]", filename, res.Err)
 	}
@@ -404,7 +405,7 @@ func dumpImage(i *images.Image) {
 	fmt.Printf("\tSize             [%d bytes]\n", i.SizeBytes)
 	fmt.Printf("\tUUID             [%s]\n", i.ID)
 	fmt.Printf("\tStatus           [%s]\n", i.Status)
-	fmt.Printf("\tCreatedDate      [%s]\n", i.CreatedDate)
+	fmt.Printf("\tCreatedAt        [%s]\n", i.CreatedAt)
 }
 
 func imageServiceClient(username, password, tenant string) (*gophercloud.ServiceClient, error) {
