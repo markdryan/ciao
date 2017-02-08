@@ -26,9 +26,15 @@ import (
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumeactions"
+	"github.com/gophercloud/gophercloud/openstack/blockstorage/extensions/volumetenants"
 	"github.com/gophercloud/gophercloud/openstack/blockstorage/v2/volumes"
 	"github.com/gophercloud/gophercloud/pagination"
 )
+
+type extendedVolume struct {
+	volumetenants.VolumeExt
+	volumes.Volume
+}
 
 var volumeCommand = &command{
 	SubCommands: map[string]subCommand{
@@ -131,7 +137,7 @@ func (cmd *volumeListCommand) parseArgs(args []string) []string {
 	return cmd.Flag.Args()
 }
 
-type byCreatedAt []volumes.Volume
+type byCreatedAt []extendedVolume
 
 func (ss byCreatedAt) Len() int      { return len(ss) }
 func (ss byCreatedAt) Swap(i, j int) { ss[i], ss[j] = ss[j], ss[i] }
@@ -149,9 +155,10 @@ func (cmd *volumeListCommand) run(args []string) error {
 
 	pager := volumes.List(client, volumes.ListOpts{})
 
-	sortedVolumes := []volumes.Volume{}
+	sortedVolumes := []extendedVolume{}
 	err = pager.EachPage(func(page pagination.Page) (bool, error) {
-		volumeList, err := volumes.ExtractVolumes(page)
+		volumeList := []extendedVolume{}
+		err := volumes.ExtractVolumesInto(page, &volumeList)
 		if err != nil {
 			errorf("Could not extract volume [%s]\n", err)
 		}
@@ -171,7 +178,7 @@ func (cmd *volumeListCommand) run(args []string) error {
 
 	for i, v := range sortedVolumes {
 		fmt.Printf("Volume #%d\n", i+1)
-		dumpVolume(&v)
+		dumpVolume(&v.Volume)
 		fmt.Printf("\n")
 	}
 
@@ -215,7 +222,8 @@ func (cmd *volumeShowCommand) run(args []string) error {
 		fatalf("Could not get volume service client [%s]\n", err)
 	}
 
-	volume, err := volumes.Get(client, cmd.volume).Extract()
+	volume := extendedVolume{}
+	err = volumes.Get(client, cmd.volume).ExtractInto(&volume)
 	if err != nil {
 		return err
 	}
@@ -225,7 +233,7 @@ func (cmd *volumeShowCommand) run(args []string) error {
 			&volume)
 	}
 
-	dumpVolume(volume)
+	dumpVolume(&volume.Volume)
 	return nil
 }
 
