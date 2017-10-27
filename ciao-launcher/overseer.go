@@ -55,7 +55,6 @@ type ovsGetCmd struct {
 
 type ovsInstance struct {
 	instance string
-	running  ovsRunningState
 	cmdCh    chan<- interface{}
 }
 
@@ -423,7 +422,6 @@ func (ovs *overseer) processGetAllCommand(cmd *ovsGetAllCmd) {
 		res.instances = append(res.instances,
 			ovsInstance{
 				instance: k,
-				running:  v.running,
 				cmdCh:    v.cmdCh,
 			})
 	}
