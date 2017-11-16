@@ -23,5 +23,5 @@ sudo docker rm -v -f ceph-demo
 sudo rm /etc/ceph/*
 sudo rm -rf /etc/ciao
 sudo rm -rf /var/lib/ciao
-sudo userdel ciao
+sudo userdel ciaou
 

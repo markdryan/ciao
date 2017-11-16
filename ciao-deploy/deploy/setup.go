@@ -67,7 +67,7 @@ var ciaoLocalRolesDir = ciaoDataDir + "/local/uuid-storage/role/client"
 var ciaoLocalCertsDir = ciaoDataDir + "/local/certs"
 var ciaoConfigDir = "/etc/ciao"
 var ciaoPKIDir = "/etc/pki/ciao"
-var ciaoUser = "ciao"
+var ciaoUser = "ciaou"
 var ciaoUserAndGroup = ciaoUser + ":" + ciaoUser
 
 func createConfigurationFile(ctx context.Context, clusterConf *ClusterConfiguration) (string, error) {

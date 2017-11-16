@@ -13,4 +13,4 @@ sudo rm -f /usr/local/bin/ciao*
 sudo rm -rf /etc/ciao
 sudo rm /etc/pki/ciao/cert-*.pem
 sudo rm /etc/pki/ciao/CAcert.pem
-sudo userdel -f ciao
+sudo userdel -f ciaou
